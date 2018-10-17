@@ -26,15 +26,15 @@ string: .space 64
 
 length:
 
-ldrb w2, [x1]
-cmp w2, cr
+ldrb w2, [x1] //load letter from string
+cmp w2, cr // is it 0
 beq getout
 
-add x0, x0, #1
-add x1, x1, #1
+add x0, x0, #1 //add one to length
+add x1, x1, #1 //add one to string
 
 
-b length
+b length //loop
 
 ret
 
@@ -50,39 +50,39 @@ findPalin:
 //x1 has string
 //x2 has front of string
 
-mov x21, x2
-str x30, [SP, #-16]!
+mov x21, x2 //store for later
+str x30, [SP, #-16]! //put on stack
 
 ldrb w4, [x1, x2] //w4 should have first letter of string
 ldrb w5, [x1, x0] //w5 should have last letter of string
-stp w4, w5, [SP, #-16]!
+stp w4, w5, [SP, #-16]! //put on stack
 
 
-cmp x2, x0
+cmp x2, x0 //are characters the same
 beq getout
 
-add x21, x21, #1
+add x21, x21, #1 //are they next to each other
 cmp x21, x0
 beq getout
 
 add x2, x2, #1 //move front of string up
 sub x0, x0, #1 //move end of string down
 
-bl findPalin
+bl findPalin //recurse
 
-ldp w4, w5, [SP], #16
+ldp w4, w5, [SP], #16 //load from stack
 ldr x30, [SP], #16
 
-mov x6, #999
+mov x6, #999 //set value for debugging but also to say its a palindrome
 
-cmp w4, w5
+cmp w4, w5 //if same, recurse, otherwise, break
 bne false
 br x30
 
 
 false:
 mov x6, #0
-bl done
+bl done //reset 6 and print
 
 
 getout:
@@ -115,16 +115,12 @@ sub x0, x0, #1 //convert length to length-1
 ldr x1, =string //1 should have the string to check
 
 lsr x20, x20, #1 //divides length by 2
-mov x7, x20
+mov x7, x20 //this isn't used. it was for debugging.
 mov x2, #0
 mov x4, #0
 mov x5, #0
 bl findPalin
 mov x21, x6
-
-ldr x0, =debugPlz
-mov x1, x6
-bl printf
 
 bl printYes
 
